@@ -11,6 +11,7 @@ int main(void) {
         print_prompt();
         command = read_command();
         if (command == NULL) {
+            printf("\n");
             break; // Handle Ctrl+D (EOF)
         }
         status = execute_command(command);
@@ -19,5 +20,3 @@ int main(void) {
 
     return EXIT_SUCCESS;
 }
-
-
