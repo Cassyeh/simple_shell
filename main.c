@@ -5,20 +5,19 @@
 
 int main(void) {
     char *command;
+    int status;
 
     while (1) {
-        display_prompt();
+        print_prompt();
         command = read_command();
         if (command == NULL) {
-            printf("\n");
-            break; /* Handle Ctrl+D (EOF) */
+            break; // Handle Ctrl+D (EOF)
         }
-        if (execute_command(command) == -1) {
-            perror("Error");
-        }
+        status = execute_command(command);
         free(command);
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
+
 
