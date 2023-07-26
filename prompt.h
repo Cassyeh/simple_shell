@@ -1,7 +1,8 @@
 #ifndef PROMPT_H
 #define PROMPT_H
 
-/*Function prototype for displaying the prompt*/
 void display_prompt(void);
+char *read_command(void);
 
 #endif /* PROMPT_H */
+
