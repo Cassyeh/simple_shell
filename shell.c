@@ -2,27 +2,26 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <string.h>
 #include "shell.h"
 
 int execute_command(char *command) {
     pid_t pid;
+    int status;
 
     pid = fork();
-    if (pid == -1) {
-        perror("fork error");
+    if (pid == 0) {
+        char *args[] = {command, NULL}; // Arguments array
+        execve(command, args, NULL);
+        perror("execve"); // This line is reached only if execve fails
+        exit(EXIT_FAILURE);
+    } else if (pid > 0) {
+        wait(&status); // Wait for the child process to finish
+    } else {
+        perror("fork");
         return -1;
     }
-    if (pid == 0) {
-        char *args[2]; /* Arguments array */
-        args[0] = command;
-        args[1] = NULL;
-        if (execve(command, args, NULL) == -1) {
-            perror("execve error");
-            _exit(EXIT_FAILURE);
-        }
-    } else {
-        wait(NULL); /* Wait for the child process to finish */
-    }
-    return 0;
+
+    return status;
 }
 
