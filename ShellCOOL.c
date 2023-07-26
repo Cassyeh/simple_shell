@@ -4,39 +4,58 @@
 #include <unistd.h>
 #include "main.h"
 
-
-int main(void)
+void display_prompt(void)
 {
-    char *buffer;
-    size_t bufsize = 1024; // Adjust this buffer size as needed
+    printf("#cisfun$ ");
+}
+
+char *read_command(void)
+{
+    char *buffer = NULL;
+    size_t bufsize = 0;
     ssize_t characters;
 
-    buffer = (char *)malloc(bufsize * sizeof(char));
-    if (!buffer)
+    characters = getline(&buffer, &bufsize, stdin);
+    if (characters == -1) // Handle "end of file" condition
     {
-        perror("malloc error");
-        return (EXIT_FAILURE);
+        printf("\n");
+        exit(EXIT_SUCCESS);
     }
 
-    while (1)
+    if (buffer[characters - 1] == '\n')
+        buffer[characters - 1] = '\0'; // Remove the newline character
+
+    return buffer;
+}
+
+void execute_command(char *command)
+{
+    if (strcmp(command, "exit") == 0)
     {
-        printf("#cisfun$ ");
-        characters = getline(&buffer, &bufsize, stdin);
-        if (characters == -1) // Handle "end of file" condition
-        {
-            printf("\n");
-            break;
-        }
-
-        /* Parse the user input and get the command */
-
-        /* Use execve and fork to execute the command */
-
-        /* Handle command not found error */
-
-        /* Continue to the next prompt */
+        free(command);
+        exit(EXIT_SUCCESS);
     }
 
-    free(buffer);
-    return (EXIT_SUCCESS);
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        perror("fork error");
+        exit(EXIT_FAILURE);
+    }
+
+    if (pid == 0) // Child process
+    {
+        execve(command, NULL, environ);
+        print_error(command);
+        exit(EXIT_FAILURE);
+    }
+    else // Parent process
+    {
+        wait(NULL); // Wait for the child process to finish
+    }
+}
+
+void print_error(char *command)
+{
+    fprintf(stderr, "./shell: %s: No such file or directory\n", command);
 }
