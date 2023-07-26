@@ -4,23 +4,36 @@
 #include <sys/wait.h>
 #include "shell.h"
 
-int execute_command(char *command) {
-	pid_t pid;
-	int status;
-	
-	pid = fork();
+void execute_command(char *command) {
+    pid_t pid;
+    char **args = malloc(2 * sizeof(char *));
 
-	if (pid == -1) {
-		perror("fork error");
-		return 1;
-	}
-
-	if (pid == 0) {
-		execve(command, NULL, NULL);
-		perror(command);
-		_exit(EXIT_FAILURE);
-    } else {
-	    wait(&status);
-	    return status;
+    if (args == NULL) {
+        perror("malloc error");
+        _exit(EXIT_FAILURE);
     }
+
+    args[0] = command;
+    args[1] = NULL;
+
+    pid = fork();
+
+    if (pid == -1) {
+        perror("fork error");
+        free(args);
+        _exit(EXIT_FAILURE);
+    }
+
+    if (pid == 0) {
+        if (execve(command, args, NULL) == -1) {
+            perror(command);
+            free(args);
+            _exit(EXIT_FAILURE);
+        }
+    } else {
+        wait(NULL);
+    }
+
+    free(args);
 }
+

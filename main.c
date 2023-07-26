@@ -1,30 +1,15 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include "shell.h"
-#include "prompt.h"
-
-int main(void) 
-{
-	return 0;
-}
-
-
-#include <stdio.h>
-#include <stdlib.h>
-#include "shell.h"
+#include "shell.h" /* Include the shell header file*/
 
 int main(void) {
-	char *command;
-	int status;
+    char *command;
 
-	display_prompt();
+    while (1) {
+        printf("#cisfun$ ");
+        command = read_command(); /* Call the read_command function from shell.c*/
+        execute_command(command);
+        free(command);
+    }
 
-	while ((command = read_command()) != NULL) {
-		status = execute_command(command);
-			free(command);
-			display_prompt();
-	}
-
-	printf("\n");
-	return 0;
+    return (0);
 }
