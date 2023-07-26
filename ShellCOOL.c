@@ -16,14 +16,15 @@ char *read_command(void)
 	ssize_t characters;
 	
 	characters = getline(&buffer, &bufsize, stdin);
-	if (characters == -1) // Handle "end of file" condition
+	if (characters == -1) 
+		/* Handle "end of file" condition*/
 	{
 		printf("\n");
 		exit(EXIT_SUCCESS);
 	}
 	
 	if (buffer[characters - 1] == '\n')
-		buffer[characters - 1] = '\0'; // Remove the newline character
+		buffer[characters - 1] = '\0'; /* Remove the newline character*/
 	return buffer;
 }
 
@@ -42,15 +43,15 @@ void execute_command(char *command)
 		exit(EXIT_FAILURE);
 	}
 	
-	if (pid == 0) // Child process
+	if (pid == 0) /* Child process*/
 	{
 		execve(command, NULL, environ);
 		print_error(command);
 		exit(EXIT_FAILURE);
 	}
-	else // Parent process
+	else /* Parent process*/
 	{
-		wait(NULL); // Wait for the child process to finish
+		wait(NULL); /* Wait for the child process to finish*/
 	}
 }
 
