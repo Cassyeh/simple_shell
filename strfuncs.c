@@ -99,10 +99,10 @@ int strspace(char *string)
 /**
  * strtoken - function to split strings into array of words
  * @line: string to be split
- *
+ * @delim: delimiter
  * Return: pointer to array of strings
  */
-char **strtoken(char *line)
+char **strtoken(char *line, char *delim)
 {
 	char **argvs;
 	char *copy;
@@ -115,10 +115,10 @@ char **strtoken(char *line)
 		return (NULL);
 	}
 	strcopy(copy, line);
-	token = strtok(copy, " \t\n");
+	token = strtok(copy, delim);
 	while (token != NULL)
 	{
-		token = strtok(NULL, " \t\n");
+		token = strtok(NULL, delim);
 		num_tokens++;
 	}
 	num_tokens++;
@@ -129,13 +129,13 @@ char **strtoken(char *line)
 		return (NULL);
 	}
 	strcopy(copy, line);
-	token = strtok(copy, " \t\n");
+	token = strtok(copy, delim);
 	argvs = (char **) malloc(num_tokens * sizeof(char *));
 	for (i = 0; token != NULL; i++)
 	{
 		argvs[i] = (char *) malloc(strlength(token) + 1);
 		strcopy(argvs[i], token);
-		token = strtok(NULL, " \t\n");
+		token = strtok(NULL, delim);
 	}
 	argvs[i] = NULL;
 	free(copy);

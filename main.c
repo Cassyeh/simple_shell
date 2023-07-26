@@ -24,7 +24,7 @@ int main(int val, char **argvs)
 			bytes_read = getline(&line, &length, stdin);
 			continue;
 		}
-		argvs = strtoken(line);
+		argvs = strtoken(line, " \t\n");
 		if (argvs != NULL)
 		{
 			cpid = fork();
@@ -32,6 +32,8 @@ int main(int val, char **argvs)
 				return (-1);
 			if (cpid == 0)
 			{
+				if (argvs[0][0] != '/')
+					argvs[0] = get_env(argvs[0]);
 				val = execve(argvs[0], argvs, NULL);
 				if (val == -1)
 					perror("Error");
