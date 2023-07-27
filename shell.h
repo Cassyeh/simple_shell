@@ -11,6 +11,6 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <errno.h>
-extern char **__environ;
+extern char **environ;
 
 #endif
