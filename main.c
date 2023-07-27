@@ -1,59 +1,52 @@
 #include "shell.h"
-#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <string.h>
 
-#define MAX_INPUT_SIZE 1024
-#define MAX_TOKENS 64
-#define DELIMITERS " \t\n\r\a"
-
-/* Implement utility functions and other function prototypes as needed */
-
-int main() {
-    char *input;
-    char **args;
-
-    do {
-        _putchar('#');
-        _putchar('c');
-        _putchar('i');
-        _putchar('s');
-        _putchar('f');
-        _putchar('u');
-        _putchar('n');
-        _putchar('$');
-        _putchar(' ');
-
-        input = read_input();
-        if (input == NULL) {
-            /* Handle Ctrl+D (EOF)*/
-            _putchar('\n');
-            break;
-        }
-        
-        args = tokenize_input(input);
-        if (args[0] != NULL) {
-            if (strcmp(args[0], "exit") == 0) {
-                /*Handle 'exit' command*/
-                break;
-            } else if (strcmp(args[0], "cd") == 0) {
-                /* Handle 'cd' command*/
-                if (args[1] != NULL) {
-                    if (chdir(args[1]) != 0) {
-                        perror("cd error");
-                    }
-                }
-            } else {
-                /*Execute external command*/
-                execute_command(args);
-            }
-        }
-
-        free(input);
-        free(args);
-    } while (1);
-
-    return 0;
+int _putchar(char c)
+{
+	return write(STDOUT_FILENO, &c, 1);
 }
+
+int main(void)
+{
+	char line[1024];
+	char *prompt = "($) ", *argvs[2];
+	pid_t cpid;
+	int bytes_read;
+	int write_chars;
+
+	signal(SIGINT, SIG_IGN);
+
+	while (1)
+	{
+		write_chars = write(STDOUT_FILENO, prompt, strlen(prompt));
+		if (write_chars == -1)
+			exit(1);
+
+		bytes_read = read(STDIN_FILENO, line, 1024);
+		if (bytes_read == -1)
+			exit(2);
+
+		if (strncmp(line, "exit", 4 * sizeof(char)) == 0 || bytes_read == 0)
+			exit(0);
+
+		cpid = fork();
+		if (cpid == -1)
+			exit(3);
+		else if (cpid == 0)
+		{
+			argvs[0] = strtok(line, " \n");
+			argvs[1] = NULL;
+			execve(argvs[0], argvs, NULL);
+			perror(argvs[0]);
+			exit(4);
+		}
+		else
+			wait(NULL);
+	}
+	return (0);
+}
+
