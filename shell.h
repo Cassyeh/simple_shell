@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+extern char **environ;
+
 int strlength(char *string);
 int strcompare(char *str_1, char *str_2);
 void strcopy(char *new_str, char *old_str);

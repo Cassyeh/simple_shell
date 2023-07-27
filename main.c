@@ -34,7 +34,7 @@ int main(int val, char **argvs)
 			{
 				if (argvs[0][0] != '/')
 					argvs[0] = get_env(argvs[0]);
-				val = execve(argvs[0], argvs, NULL);
+				val = execve(argvs[0], argvs, environ);
 				if (val == -1)
 					perror("Error");
 				exit(0);
