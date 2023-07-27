@@ -13,4 +13,6 @@
 #include <errno.h>
 extern char **environ;
 
+int _putchar(char c);
+
 #endif
