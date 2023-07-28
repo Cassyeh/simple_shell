@@ -1,43 +1,44 @@
 #include "shell.h"
 
 /**
- * main - entry to simple shell
- * Return: 0 if no error
- */
+* main - int function
+* Return: Null
+*/
+
 int main(void)
 {
-	char line[1024];
-	char *prompt = "($) ", *argvs[2];
-	pid_t cpid;
-	int bytes_read;
-	int write_chars;
+	char *fpb = NULL, *copy = NULL, *buff = NULL;
+	char *PATH = NULL;
+	int exitstat = 0;
+	char **arg;
 
+	signal(SIGINT, SIG_IGN);
+	PATH = get_env("PATH");
+	if (PATH == NULL)
+		return (-1);
 	while (1)
 	{
-		write_chars = write(STDOUT_FILENO, prompt, strlen(prompt));
-		if (write_chars == -1)
-			exit(1);
+		arg = NULL;
+		prompt();
+		buff = _reaad();
 
-		bytes_read = read(STDIN_FILENO, line, 1024);
-		if (bytes_read == -1)
-			exit(2);
-
-		if (strncmp(line, "exit", 4 * sizeof(char)) == 0 || bytes_read == 0)
-			exit(0);
-
-		cpid = fork();
-		if (cpid == -1)
-			exit(3);
-		else if (cpid == 0)
+		if (*buff != '\0')
 		{
-			argvs[0] = strtok(line, " \n");
-			argvs[1] = NULL;
-			execve(argvs[0], argvs, environ);
-			perror("./shell");
-			exit(4);
+			arg = split(buff);
+			if (arg == NULL)
+			{
+				free(buff);
+				continue;
+			}
+			fpb = _pathfbuff(arg, PATH, copy);
+
+			if (checks(arg, buff, exitstat) == 1)
+				continue;
+			exitstat = _proc_fork(arg, buff, fpb);
 		}
 		else
-			wait(NULL);
+			free(buff);
 	}
+
 	return (0);
 }
