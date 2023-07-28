@@ -1,0 +1,54 @@
+#include "shell.h"
+
+/**
+* change_dir - change directory
+* @splited_input: argument
+*/
+void change_dir(char **splited_input)
+{
+	char *dir = splited_input[1];
+	char *curr_dir, *new_dir;
+
+	if (dir == NULL || _strncmp(dir, "~", 1) == 0)
+		/* if no argument is given or "~" argument, go to HOME*/
+		dir = getenv("HOME");
+	else if (_strncmp(dir, "-", 1) == 0)
+		/* if the argument is "-", go to the previous directory */
+		dir = getenv("OLDPWD");
+	else
+	{	 /* go to the directory provided */
+		dir = malloc((_strlen(splited_input[1] + 1) * sizeof(char)));
+		if (dir == NULL)
+		{
+			perror("malloc failed");
+			return;
+		}
+		_strcpy(dir, splited_input[1]);
+	}
+	if (dir == NULL)
+	{
+		_print_str("./shell: cd: No directory found\n");
+		return;
+	}
+	curr_dir = getcwd(NULL, 0);
+	if (curr_dir == NULL)
+	{/* store the current directory */
+		perror("getcwd failed");
+		return;
+	}
+	if (chdir(dir) != 0)
+		perror("cd failed");
+	else
+	{/*update the environment pwd*/
+		setenv("OLDPWD", curr_dir, 1);
+		free(curr_dir);
+		new_dir = getcwd(NULL, 0);
+		if (new_dir == NULL)
+		{
+			perror("getcwd failed");
+			return;
+		}
+		setenv("PWD", new_dir, 1);
+		free(new_dir);
+	}
+}
